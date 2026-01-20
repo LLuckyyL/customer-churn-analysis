@@ -1,0 +1,17 @@
+-- database: ./telco_churn.db
+
+SELECT
+  Contract,
+  ROUND(SUM("Monthly Charges"), 2) AS total_monthly_revenue,
+  ROUND(
+    SUM(CASE WHEN "Churn Label" = 'Yes' THEN "Monthly Charges" ELSE 0 END),
+    2
+  ) AS revenue_at_risk,
+  ROUND(
+    100.0 * SUM(CASE WHEN "Churn Label" = 'Yes' THEN "Monthly Charges" ELSE 0 END)
+    / SUM("Monthly Charges"),
+    2
+  ) AS percent_revenue_at_risk
+FROM customers
+GROUP BY Contract
+ORDER BY percent_revenue_at_risk DESC;

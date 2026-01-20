@@ -1,0 +1,63 @@
+-- database: ./telco_churn.db
+
+-- Use the ▷ button in the top right corner to run the entire file.
+
+SELECT * FROM customers;
+SELECT COUNT(*) FROM customers;
+SELECT name FROM sqlite_master WHERE type = 'table';
+
+SELECT COUNT(*) AS total_customers
+FROM customers;
+
+SELECT COUNT(*) AS churned_customers
+FROM customers 
+WHERE "Churn Label" = 'Yes';
+
+SELECT 
+    ROUND(
+        100.0 * SUM(CASE WHEN "Churn Label" = 'Yes' THEN 1 ELSE 0 END) / COUNT(*),
+        2
+    ) AS churn_rate_percentage
+    FROM customers;
+
+    SELECT 
+      Contract,
+      COUNT(*) AS total_customers,
+      SUM(CASE WHEN "Churn Label" = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+      ROUND(
+        100.0 * SUM(CASE WHEN "Churn Label" = 'Yes' THEN 1 ELSE 0 END) / COUNT(*),
+        2
+      ) AS churn_rate_percent
+      FROM customers
+      GROUP BY Contract
+      ORDER BY churn_rate_percent DESC;
+
+      SELECT
+  ROUND(SUM("Monthly Charges"), 2) AS total_monthly_revenue,
+  ROUND(
+    SUM(CASE WHEN "Churn Label" = 'Yes' THEN "Monthly Charges" ELSE 0 END),
+    2
+  ) AS revenue_at_risk,
+  ROUND(
+    100.0 * SUM(CASE WHEN "Churn Label" = 'Yes' THEN "Monthly Charges" ELSE 0 END)
+    / SUM("Monthly Charges"),
+    2
+  ) AS percent_revenue_at_risk
+FROM customers;
+
+SELECT
+  Contract,
+  ROUND(SUM("Monthly Charges"), 2) AS total_monthly_revenue,
+  ROUND(
+    SUM(CASE WHEN "Churn Label" = 'Yes' THEN "Monthly Charges" ELSE 0 END),
+    2
+  ) AS revenue_at_risk,
+  ROUND(
+    100.0 * SUM(CASE WHEN "Churn Label" = 'Yes' THEN "Monthly Charges" ELSE 0 END)
+    / SUM("Monthly Charges"),
+    2
+  ) AS percent_revenue_at_risk
+FROM customers
+GROUP BY Contract
+ORDER BY percent_revenue_at_risk DESC;
+
